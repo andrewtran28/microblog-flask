@@ -1,5 +1,6 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as so
+import jwt
 
 from datetime import datetime, timezone
 from typing import Optional
@@ -7,6 +8,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db, login
 from hashlib import md5
+from time import time
+from app import app
+
 
 # Followers association
 followers = sa.Table(
@@ -95,6 +99,25 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return "<User {}>".format(self.username)
+
+    # This method returns a JWT token as a string, which is generated directly by the jwt.encode() function.
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {"reset_password": self.id, "exp": time() + expires_in},
+            app.config["SECRET_KEY"],
+            algorithm="HS256",
+        )
+
+    # This method is static meaning it can be invoked directly from the class and don't receive the class as a first argument.
+    @staticmethod
+    def verify_resetpassword_token(token):
+        try:
+            id = jwt.decode(token, app.config["SECRET_KEY"], algorthims=["HS256"])[
+                "reset_password"
+            ]
+        except:
+            return
+        return db.session.get(User, id)
 
 
 class Post(db.Model):

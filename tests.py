@@ -114,6 +114,18 @@ class UserModelCase(unittest.TestCase):
         self.assertEqual(f3, [p3, p4])
         self.assertEqual(f4, [p4])
 
+    # Make a test for pagination
+    def test_pagination(self):
+        u1 = User(username="john", email="john@example.com")
+        db.session.add(u1)
+        db.session.commit()
+        for i in range(30):
+            db.session.add(Post(body=f"post from john {i}", author=u1))
+        db.session.commit()
+        # response = self.client.get(url_for("user", username="john"))
+        # self.assertEqual(response.status_code, 200)
+        # self.assertTrue("pagination" in response.get_json().keys())
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

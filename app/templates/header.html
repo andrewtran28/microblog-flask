@@ -32,6 +32,6 @@
       <li>{{ message }}</li>
       {% endfor %}
     </ul>
-    {% endif %} {% endwith %} {% block content %}{% endblock %}
+    {% endif %} {% endwith %} {% block content %}{% endblock %} {{ moment.include_moment() }}
   </body>
 </html>
